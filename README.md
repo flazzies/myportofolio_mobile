@@ -105,3 +105,26 @@ Hot reload itu fitur super cepat Flutter buat nyuntik kode baru langsung ke dala
 AI Disclosure: Saya menggunakan Claude untuk membantu mengerjakan tugas ini. Saya menggunakannya untuk membantu menjawab pertanyaan refleksi dan troubleshooting jika ada eror.
 
 Claude: https://claude.ai/share/ff5adae8-e1a4-40c4-91cc-73907d251e51
+
+### Tugas 8
+
+1. push() menaroh page baru diatas stack, page yang lama ada dibawah page yg baru dan ketika pencet back akan kembali ke page yg lama 
+pushReplacement() menimpa halaman lama dengan halaman yg baru, jadi tidak bisa balik ke halaman yg lama. 
+pop() untuk menghapus page diatas dan balik ke halaman yg lama  
+Untuk kartu di home page pada tombol edukasi saya, saya memakai push() karena dengan begitu saya bisa balik ke halaman sebelumnya dengan memencet back pada broswernya. Tapi ketika mencet tambah education/proyek di left drawer yang di home, itu pakai push replacement karena dengan drawernya masih bisa navigasi balik ke home, dengan memanggil pushReplacement() ke my homepage, sehingga halaman form diganti dengan halaman utama.
+
+2.  Scaffold memberi setiap halaman kerangka yang konsisten (appbar, drawer, body) dan LeftDrawer dipakai pada setiap halaman. Bisa dilihat bahwa appbar pada semua halaman sama dan kerangkanya juga sama persis. Warna Colors.indigo dipakai di DrawerHeader pada left_drawer.dart dan di AppBar pada education_form.dart.
+
+3. Kita harus pakai scroll (dengan SingleChildScrollView + Column) karena lima field tidak akan fit pada mobile device dengan keyboard terbuka, dan agar kita bisa scroll ke tombol simpan.
+Padding dipakai agar field tidak menyentuh field lain dan agar field tidak menyentuh screen edges.
+
+4. formKey adalah ibarat seperti remote control pada keaadaan form. 
+validator ngecek setiap field dan mereturn error string atau null.
+validate() menjalankan semua validator, dan hanya true jika semua validator pass. Lalu dialog berhasil dibuka.
+Contoh value yg bikin error: "  " spasi saja pada nama institusi, dan end date di set sebelum start date. Keyboard type dan input widget tidak bisa ngecek white space dan end date dan start date order, hanya validator yg bisa. 
+
+AI Disclosure: Saya memakai AI untuk membantu dalam pengerjaan saya, saya coba kerjain sendiri dulu dengan kode yg dari tutorial dan saya minta AI untuk mengkoreksi. Untuk pertanyaan refleksi, claude menjelaaskan lalu saya tulis ulang dengan bahasa saya sendiri.
+
+Tool: Claude (Sonnet 5.5)
+
+Chat Log: https://claude.ai/share/aea0d435-893f-4c2c-b0a2-7020d76ee0ec
