@@ -128,3 +128,5 @@ AI Disclosure: Saya memakai AI untuk membantu dalam pengerjaan saya, saya coba k
 Tool: Claude (Sonnet 5.5)
 
 Chat Log: https://claude.ai/share/aea0d435-893f-4c2c-b0a2-7020d76ee0ec
+
+Extra: Reset and Kembali buttons on both forms, with a canPop() check so Kembali works whether the form was opened from the card or the drawer
