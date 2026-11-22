@@ -20,6 +20,7 @@ class MyHomePage extends StatelessWidget {
       Icons.edit,
       const Color.fromARGB(255, 0, 0, 0),
     ),
+    ItemHomepage("Tambah Edukasi", Icons.school, Colors.blueGrey),
   ];
 
   @override
