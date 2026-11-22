@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
+import 'package:myportofolio_mobile/screens/menu.dart';
 
 class EducationFormPage extends StatefulWidget {
   const EducationFormPage({super.key});
@@ -26,6 +27,31 @@ class _EducationFormPageState extends State<EducationFormPage> {
   // This makes YYYY-MM-DD
   String _formatDate(DateTime d) =>
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
+  void _resetForm() {
+    _formKey.currentState!.reset();
+    setState(() {
+      _institution = "";
+      _level = "S1";
+      _studyField = "";
+      _startDate = null;
+      _endDate = null;
+      _startDateController.clear();
+      _endDateController.clear();
+    });
+  }
+
+  void _goBack() {
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context); // opened from the card: go back
+    } else {
+      Navigator.pushReplacement(
+        // opened from the drawer: nothing to go back to
+        context,
+        MaterialPageRoute(builder: (context) => MyHomePage()),
+      );
+    }
+  }
 
   // Frees the controller when the page closes
   @override
@@ -198,61 +224,75 @@ class _EducationFormPageState extends State<EducationFormPage> {
                 ),
               ),
 
-              // Save button
+              // Buttons
               Center(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(Colors.indigo),
-                    ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text('Data edukasi tersimpan!'),
-                              content: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Institusi: $_institution'),
-                                    Text('Tingkat: $_level'),
-                                    Text(
-                                      'Jurusan: ${_studyField.trim().isEmpty ? "-" : _studyField}',
+                  child: Wrap(
+                    spacing: 12,
+                    runSpacing: 8,
+                    alignment: WrapAlignment.center,
+                    children: [
+                      OutlinedButton(
+                        onPressed: _goBack,
+                        child: const Text('Kembali'),
+                      ),
+                      OutlinedButton(
+                        onPressed: _resetForm,
+                        child: const Text('Reset'),
+                      ),
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all(
+                            Colors.indigo,
+                          ),
+                        ),
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text('Data edukasi tersimpan!'),
+                                  content: SingleChildScrollView(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Institusi: $_institution'),
+                                        Text('Tingkat: $_level'),
+                                        Text(
+                                          'Jurusan: ${_studyField.trim().isEmpty ? "-" : _studyField}',
+                                        ),
+                                        Text(
+                                          'Tanggal Mulai: ${_formatDate(_startDate!)}',
+                                        ),
+                                        Text(
+                                          'Tanggal Berakhir: ${_formatDate(_endDate!)}',
+                                        ),
+                                      ],
                                     ),
-                                    Text(
-                                      'Tanggal Mulai: ${_formatDate(_startDate!)}',
-                                    ),
-                                    Text(
-                                      'Tanggal Berakhir: ${_formatDate(_endDate!)}',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      child: const Text('OK'),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        _resetForm();
+                                      },
                                     ),
                                   ],
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  child: const Text('OK'),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    _formKey.currentState!.reset();
-                                    setState(() {
-                                      _startDate = null;
-                                      _endDate = null;
-                                    });
-                                  },
-                                ),
-                              ],
+                                );
+                              },
                             );
-                          },
-                        );
-                      }
-                    },
-                    child: const Text(
-                      "Simpan",
-                      style: TextStyle(color: Colors.white),
-                    ),
+                          }
+                        },
+                        child: const Text(
+                          "Simpan",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
