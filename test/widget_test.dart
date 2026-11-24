@@ -1,30 +1,38 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:myportofolio_mobile/main.dart';
+import 'package:myportofolio_mobile/models/project.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('Project', () {
+    test('toJson uses snake_case keys and omits id', () {
+      const project = Project(
+        id: '1',
+        title: 'My App',
+        description: 'A cool app',
+        techStack: 'Flutter, Django',
+        projectUrl: 'https://example.com',
+      );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+      final json = project.toJson();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+      expect(json['title'], 'My App');
+      expect(json['tech_stack'], 'Flutter, Django');
+      expect(json['project_url'], 'https://example.com');
+      expect(json['project_image_url'], '');
+      expect(json.containsKey('id'), isFalse);
+    });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    test('fromJson parses a Django response', () {
+      final project = Project.fromJson({
+        'id': '7',
+        'title': 'My App',
+        'description': 'A cool app',
+        'tech_stack': 'Flutter',
+        'project_url': 'https://example.com',
+      });
+
+      expect(project.id, '7');
+      expect(project.techStack, 'Flutter');
+      expect(project.projectImageUrl, '');
+    });
   });
 }
