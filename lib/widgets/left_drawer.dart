@@ -6,7 +6,9 @@ import 'package:myportofolio_mobile/screens/project_form.dart';
 import 'package:myportofolio_mobile/screens/project_list_screen.dart';
 import 'package:myportofolio_mobile/services/auth_state.dart';
 import 'package:myportofolio_mobile/widgets/auth_guard.dart';
+import 'package:myportofolio_mobile/screens/experience_list_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:myportofolio_mobile/screens/experience_form.dart';
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
@@ -68,6 +70,28 @@ class LeftDrawer extends StatelessWidget {
               if (!ok || !context.mounted) return;
               navigator.push(
                 MaterialPageRoute(builder: (_) => const ProjectFormPage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.work_outline),
+            title: const Text('Experiences'),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const ExperienceListScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.add_circle_outline),
+            title: const Text('Add Experience'),
+            onTap: () async {
+              final navigator = Navigator.of(context);
+              final ok = await ensureLoggedIn(context);
+              if (!ok || !context.mounted) return;
+              navigator.push(
+                MaterialPageRoute(builder: (_) => const ExperienceFormPage()),
               );
             },
           ),

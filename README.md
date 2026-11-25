@@ -1,3 +1,6 @@
+![CI](https://github.com/flazzies/myportofolio_mobile/actions/workflows/main.yaml/badge.svg)
+
+
 # myportofolio_mobile
 
 A new Flutter project.
@@ -15,6 +18,48 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## Setup
+
+### Prasyarat
+- Flutter SDK (channel stable)
+- Backend Django (DRF) yang sedang berjalan, lihat bagian Backend di bawah
+
+### Langkah instalasi
+
+1. Install dependensi:
+   ```bash
+   flutter pub get
+   ```
+
+2. Generate kode model JSON (`*.g.dart`). File ini di-ignore oleh Git, jadi wajib dijalankan setelah clone:
+   ```bash
+   dart run build_runner build --delete-conflicting-outputs
+   ```
+
+3. Jalankan aplikasi:
+
+   **Android emulator** (default memakai `http://10.0.2.2:8000`):
+   ```bash
+   flutter run
+   ```
+
+   **Chrome / Web:**
+   ```bash
+   flutter run -d chrome --dart-define=API_BASE_URL=http://localhost:8000
+   ```
+
+   Untuk memakai backend yang sudah di-deploy, ganti nilai `API_BASE_URL`:
+   ```bash
+   flutter run --dart-define=API_BASE_URL=https://<url-deploy-kamu>
+   ```
+
+### Backend
+- Repositori backend Django: <https://github.com/flazzies/NAMA-REPO-BACKEND>
+- URL API yang sudah di-deploy: <https://URL-DEPLOY-KAMU>
+
+Untuk menjalankan backend secara lokal: `python manage.py runserver`
+(pastikan `rest_framework.authtoken` sudah dimigrasi dan akun pengguna sudah dibuat untuk login).
 
 ### Tugas 7
 

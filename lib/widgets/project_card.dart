@@ -3,6 +3,9 @@ import 'package:myportofolio_mobile/screens/education_form.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
 import 'package:myportofolio_mobile/screens/project_list_screen.dart';
+import 'package:myportofolio_mobile/screens/experience_list_screen.dart';
+import 'package:myportofolio_mobile/screens/experience_form.dart';
+
 import 'package:myportofolio_mobile/services/auth_state.dart';
 import 'package:myportofolio_mobile/widgets/auth_guard.dart';
 import 'package:provider/provider.dart';
@@ -36,6 +39,13 @@ class ItemCard extends StatelessWidget {
             navigator.push(
               MaterialPageRoute(builder: (_) => const ProjectFormPage()),
             );
+          } else if (item.name == "Lihat Experience") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ExperienceListScreen(),
+              ),
+            );
           } else if (item.name == "Logout") {
             if (!auth.isLoggedIn) {
               messenger.showSnackBar(
@@ -54,6 +64,12 @@ class ItemCard extends StatelessWidget {
           } else if (item.name == "Tambah Edukasi") {
             navigator.push(
               MaterialPageRoute(builder: (_) => const EducationFormPage()),
+            );
+          } else if (item.name == "Tambah Experience") {
+            final ok = await ensureLoggedIn(context);
+            if (!ok || !context.mounted) return;
+            navigator.push(
+              MaterialPageRoute(builder: (_) => const ExperienceFormPage()),
             );
           } else {
             messenger.showSnackBar(
