@@ -49,14 +49,10 @@ samples, guidance on mobile development, and a full API reference.
    flutter run -d chrome --dart-define=API_BASE_URL=http://localhost:8000
    ```
 
-   Untuk memakai backend yang sudah di-deploy, ganti nilai `API_BASE_URL`:
-   ```bash
-   flutter run --dart-define=API_BASE_URL=https://<url-deploy-kamu>
    ```
 
 ### Backend
-- Repositori backend Django: <https://github.com/flazzies/NAMA-REPO-BACKEND>
-- URL API yang sudah di-deploy: <https://URL-DEPLOY-KAMU>
+- Repositori backend Django: <https://github.com/flazzies/myportofolio>
 
 Untuk menjalankan backend secara lokal: `python manage.py runserver`
 (pastikan `rest_framework.authtoken` sudah dimigrasi dan akun pengguna sudah dibuat untuk login).
@@ -175,3 +171,28 @@ Tool: Claude (Sonnet 5.5)
 Chat Log: https://claude.ai/share/aea0d435-893f-4c2c-b0a2-7020d76ee0ec
 
 Extra: Reset and Kembali buttons on both forms, with a canPop() check so Kembali works whether the form was opened from the card or the drawer
+
+### Tugas 9
+
+1. Daripada menyusun Map<String, dynamic> secara manual di dalam widget, saya menggunakan model bertipe lewat json_serializable. Karena Dart memakai gaya penamaan camelCase (startedAt) sementara Django memakai snake_case (started_at), anotasi @JsonSerializable(fieldRename: FieldRename.snake) membuat build_runner otomatis menghasilkan konversi penamaan yang sesuai di experience.g.dart. Sementara itu, @JsonKey(includeToJson: false) pada id dan isOngoing memastikan kedua field tersebut hanya dibaca dari server dan tidak pernah dikirim balik saat menambah data, karena nilainya dihitung oleh Django.
+
+Pendekatan ini mencegah bug diam-diam akibat salah ketik nama key. Kalau saya merakit Map manual dan salah menulis 'startedAt' alih-alih 'started_at', Django REST Framework akan mengabaikan key asing tersebut tanpa memunculkan error, sehingga entri tersimpan dengan started_at = null dan baru ketahuan saat membuka halaman detail. Dengan model bertipe, nama key dibuat otomatis oleh generator sehingga salah ketik langsung terdeteksi sebagai compile error.
+
+2. Pemanggilan getExperience() diletakkan di initState() agar hanya dieksekusi satu kali saat halaman pertama kali dibuat. Metode build() di Flutter bisa dipanggil berkali-kali setiap kali ada perubahan state atau kemunculan keyboard; jika getExperience() ditaruh di dalam build(), setiap rebuild akan membuat Future baru yang memicu layar berkedip (flicker) dan membombardir server dengan request berulang. Untuk memuat ulang data secara terkendali, kita cukup memperbarui state _experiencesFuture lewat fungsi _reload().
+
+Pada ApiClient, respons non-2xx dibuat melempar ApiException ketimbang mengembalikan null agar informasi penyebab error tidak hilang. Mengembalikan null membuat error 401 (token kedaluwarsa), 400 (gagal validasi), dan 500 (server bermasalah) terlihat sama saja. Dengan melempar ApiException yang menyimpan statusCode, FutureBuilder bisa otomatis masuk ke cabang snapshot.hasError, dan halaman form dapat memberikan respons spesifik—seperti memaksa logout dan meminta login ulang khusus jika menerima status 401.
+
+3. SessionAuthentication bekerja dengan menyimpan data sesi di server dan mengirimkan cookie sessionid ke browser yang dilindungi oleh CSRF token. Sebaliknya, TokenAuthentication bersifat stateless tanpa cookie: klien menukar kredensial dengan sebuah token, lalu mengirimkannya secara manual lewat header Authorization: Token <key> pada setiap request.
+
+myportfolio_mobile memilih TokenAuthentication karena aplikasi mobile bukanlah browser—Flutter tidak punya cookie jar otomatis maupun alur penanganan CSRF bawaan, selain itu token juga lebih eksplisit untuk dicabut saat logout. Meski begitu, SessionAuthentication tetap diaktifkan di backend Django agar aplikasi web dari tutorial sebelumnya, panel Django Admin, serta antarmuka Browsable API DRF di browser tetap bisa digunakan dengan normal.
+
+4. Dalam .github/workflows/main.yaml, job build menggunakan workflow dari VeryGoodOpenSource/very_good_workflows untuk menyiapkan Flutter, menjalankan build_runner pada langkah setup, lalu melakukan pengecekan kualitas kode di balik layar yang meliputi pemeriksaan format (dart format), analisis statis (flutter analyze), dan pengujian (flutter test) beserta test coverage. Setelah build lulus, job build_apk (yang bergantung lewat needs: build) kembali menjalankan build_runner di mesin bersih untuk mem-build app-release.apk dan mengunggahnya sebagai artifact.
+
+Berkas *.g.dart dimasukkan ke .gitignore karena berkas tersebut adalah kode hasil generasi mesin dari experience.dart, bukan kode sumber asli. Menyimpannya di Git hanya akan mengotori diff dengan ribuan baris kode mesin, rawan memicu merge conflict, dan berisiko tidak sinkron jika model diubah tanpa menjalankan ulang generator. Pipeline CI tidak membutuhkannya di repositori karena berkas tersebut selalu dibuat ulang secara segar lewat build_runner sebelum proses analisis dan build berjalan.
+
+AI Disclosure:
+Saya pakai claude untuk membantu pengerjaan, lalu saya menanyakan Claude kode saya ngapain. 
+
+Chat log: 
+
+Extra: MockClient unit test for ApiClient and Experience model.
